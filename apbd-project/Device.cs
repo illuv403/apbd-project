@@ -4,5 +4,5 @@ public class Device
 {
     public int Id { get; set; }
     public string Name { get; set; }
-    public string State { get; set; }
+    public bool IsDeviceOn { get; set; }
 }

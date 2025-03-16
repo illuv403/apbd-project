@@ -3,7 +3,7 @@
 var sw = new Smartwatch();
 sw.Id = 1;
 sw.Name = "Smartwatch";
-sw.State = "On";
+sw.IsDeviceOn = true;
 sw.RemainingBatteryCharge = 19;
 sw.NotifyAboutLowPower();
 sw.TurnOn();
@@ -11,6 +11,6 @@ sw.TurnOn();
 var pc = new PC();
 pc.Id = 2;
 pc.Name = "MY_PC";
-pc.State = "On";
+pc.IsDeviceOn = true;
 pc.OS = "Windows 10";
 pc.launchPC();
