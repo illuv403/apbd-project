@@ -1,3 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
+﻿using System.Linq.Expressions;
+using apbd_project;
 
-Console.WriteLine("Hello, World!");
+var sw = new Smartwatch();
+sw.Id = 1;
+sw.Name = "Smartwatch";
+sw.State = "On";
+sw.RemainingBatteryCharge = 18;
+sw.NotifyAboutLowPower();
