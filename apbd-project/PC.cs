@@ -29,4 +29,9 @@ public class PC : Device
     {
         return new Exception("Please specify the OS");
     }
+    
+    public override string ToString()
+    {
+        return $"{Id}, Name: {Name}, Status: {(IsDeviceOn ? "On" : "Off")}, OS: {_os}";
+    }
 }

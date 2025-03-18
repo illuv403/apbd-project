@@ -57,4 +57,8 @@ public class EmbeddedDevice : Device
         return new Exception("Connection failed");
     }
     
+    public override string ToString()
+    {
+        return $"{Id}, Name: {Name}, Status: {(IsDeviceOn ? "On" : "Off")}, IP: {_ip}, Network name: {_networkName}";
+    }
 }

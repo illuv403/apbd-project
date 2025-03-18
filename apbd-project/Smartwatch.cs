@@ -46,4 +46,9 @@ public class Smartwatch : Device, IPowerNotifier
     {
         return new Exception("Battery is empty, please charge up to turn on the device");
     }
+    
+    public override string ToString()
+    {
+        return $"{Id}, Name: {Name}, Status: {(IsDeviceOn ? "On" : "Off")}, Battery: {_remainingBatteryCharge}%";
+    }
 }
