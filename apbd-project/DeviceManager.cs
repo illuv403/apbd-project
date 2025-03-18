@@ -23,18 +23,94 @@ public class DeviceManager
 
     public void RemoveDevice(string typeId)
     {
-        foreach (var device in _devices)
+        try
         {
-            if (device.Id == typeId)
+            foreach (var device in _devices)
             {
-                _devices.Remove(device);
+                if (device.Id == typeId)
+                {
+                    _devices.Remove(device);
+                }
             }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
         }
     }
 
     public void EditDeviceData(string typeId, string name, bool isDeviceOn)
     {
         
+    }
+
+    public void TurnOnDevice(string typeId)
+    {
+        try
+        {
+            foreach (var device in _devices)
+            {
+                if (device.Id == typeId)
+                {
+                    device.IsDeviceOn = true;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    public void TurnOffDevice(string typeId)
+    {
+        try
+        {
+            foreach (var device in _devices)
+            {
+                if (device.Id == typeId)
+                {
+                    device.IsDeviceOn = false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
+
+    public void ShowAllDevices()
+    {
+        foreach (var device in _devices)
+        {
+            Console.WriteLine($"Device: {device}\n");
+        }
+    }
+
+    public void SaveListOfDevices()
+    {
+        var lines = new List<string>();
+        foreach (var device in _devices)
+        {
+            if (device is Smartwatch sw)
+            {
+                lines.Add($"SW,{sw.Id},{sw.Name},{sw.IsDeviceOn},{sw.RemainingBatteryCharge}%");
+            }
+            else if (device is PC pc)
+            {
+                lines.Add($"P,{pc.Id},{pc.Name},{pc.IsDeviceOn},{pc.OS}");
+            }
+            else if (device is EmbeddedDevice ed)
+            {
+                lines.Add($"ED,{ed.Id},{ed.Name},{ed.IP},{ed.NetworkName}");
+            }
+            else
+            {
+                Console.WriteLine("Non-existing device type");
+            }
+        }
+        File.WriteAllLines(_filePath, lines);
     }
     
     public void LoadListOfDevices()

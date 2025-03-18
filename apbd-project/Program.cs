@@ -14,6 +14,7 @@ pc.Name = "MY_PC";
 pc.IsDeviceOn = true;
 pc.OS = "Windows 10";
 pc.launchPC();
+Console.WriteLine(pc.GetType() == typeof(PC));
 
 EmbeddedDevice ed = new EmbeddedDevice();
 ed.IP = "255.255.255.256";
