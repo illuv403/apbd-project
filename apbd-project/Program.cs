@@ -14,3 +14,6 @@ pc.Name = "MY_PC";
 pc.IsDeviceOn = true;
 pc.OS = "Windows 10";
 pc.launchPC();
+
+EmbeddedDevice ed = new EmbeddedDevice();
+ed.IP = "255.255.255.256";

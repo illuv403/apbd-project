@@ -32,12 +32,13 @@ public class Smartwatch : Device, IPowerNotifier
 
     public void TurnOn()
     {
-        if (_remainingBatteryCharge == 0)
+        if (_remainingBatteryCharge <= 11)
         {
             throw EmptyBatteryException();
         }
         
         _remainingBatteryCharge -= 10;
+        IsDeviceOn = true;
         Console.WriteLine("Device turned on");
     }
 

@@ -21,6 +21,7 @@ public class PC : Device
         {
             throw EmptySystemException();
         }
+        IsDeviceOn = true;
         Console.WriteLine("PC launched");
     }
 
