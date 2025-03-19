@@ -39,10 +39,75 @@ public class DeviceManager
         }
     }
 
-    public void EditDeviceData(string typeId, string name, bool isDeviceOn)
+    public void EditDeviceData(string typeId, string attributeName, object value)
+{
+    Device? device = null;
+    
+    foreach (var dev in _devices)
     {
-        
+        if (dev.Id == typeId)
+        {
+            device = dev;
+        }
     }
+
+    if (device == null)
+    {
+        Console.WriteLine("Device not found");
+        return;
+    }
+    
+    try
+    {
+        if (attributeName == "Name")
+        {
+            if (value is string name)
+            {
+                device.Name = name;
+            }
+        }
+        else if (attributeName == "IsTurnedOn")
+        {
+            if (value is bool state)
+            {
+                device.IsDeviceOn = state;
+            }
+        }
+        else if (attributeName == "RemainingBatteryCharge")
+        {
+            if (value is int remainingBatteryCharge && device is Smartwatch sw)
+            {
+                sw.RemainingBatteryCharge = remainingBatteryCharge;
+            }
+        }
+        else if (attributeName == "OS")
+        {
+            if (value is string OS && device is PC pc)
+            {
+                pc.OS = OS;
+            }
+        }
+        else if (attributeName == "IPAddress")
+        {
+            if (value is string IP && device is EmbeddedDevice ed)
+            {
+                ed.IP = IP;
+            }
+        }
+        else if (attributeName == "NetworkName")
+        {
+            if (value is string newNetwork && device is EmbeddedDevice ed)
+            {
+                ed.NetworkName = newNetwork;
+            }
+        }
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e.Message);
+    }
+}
+
 
     public void TurnOnDevice(string typeId)
     {
