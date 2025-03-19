@@ -1,21 +1,16 @@
 ﻿using apbd_project;
 
 var sw = new Smartwatch();
-sw.Id = "SW-1";
+sw.Id = "SW-2";
 sw.Name = "Smartwatch";
-sw.IsDeviceOn = true;
-sw.RemainingBatteryCharge = 19;
-sw.NotifyAboutLowPower();
-sw.TurnOn();
-Console.WriteLine(sw);
+sw.IsDeviceOn = false;
+sw.RemainingBatteryCharge = 12;
 
-var pc = new PC();
-pc.Id = "PC-1";
-pc.Name = "MY_PC";
-pc.IsDeviceOn = true;
-pc.OS = "Windows 10";
-pc.launchPC();
-Console.WriteLine(pc.GetType() == typeof(PC));
-
-EmbeddedDevice ed = new EmbeddedDevice();
-ed.IP = "255.255.255.246";
+DeviceManager dm = new DeviceManager("Your path");
+dm.AddDevice(sw);
+dm.RemoveDevice("ED-2");
+dm.EditDeviceData("ED-1", "IP", "192.168.1.100");
+dm.TurnOnDevice("SW-2");
+dm.TurnOffDevice("SW-1");
+dm.SaveListOfDevices("Your path");
+dm.ShowAllDevices();

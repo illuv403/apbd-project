@@ -3,21 +3,22 @@ namespace apbd_project;
 public class DeviceManager
 {
     private string _filePath;
-    private List<Device> _devices;
-    
+    private List<Device> _devices = new List<Device>();
+
     public DeviceManager(string filePath)
     {
         _filePath = filePath;
         LoadListOfDevices();
     }
 
-    public void AddDevice(Device device) 
+    public void AddDevice(Device device)
     {
         if (_devices.Count >= 15)
         {
-             Console.WriteLine("Maximum number of devices reached");
-             return;
+            Console.WriteLine("Maximum number of devices reached");
+            return;
         }
+
         _devices.Add(device);
     }
 
@@ -40,73 +41,73 @@ public class DeviceManager
     }
 
     public void EditDeviceData(string typeId, string attributeName, object value)
-{
-    Device? device = null;
-    
-    foreach (var dev in _devices)
     {
-        if (dev.Id == typeId)
-        {
-            device = dev;
-        }
-    }
+        Device? device = null;
 
-    if (device == null)
-    {
-        Console.WriteLine("Device not found");
-        return;
+        foreach (var dev in _devices)
+        {
+            if (dev.Id == typeId)
+            {
+                device = dev;
+            }
+        }
+
+        if (device == null)
+        {
+            Console.WriteLine("Device not found");
+            return;
+        }
+
+        try
+        {
+            if (attributeName == "Name")
+            {
+                if (value is string name)
+                {
+                    device.Name = name;
+                }
+            }
+            else if (attributeName == "IsTurnedOn")
+            {
+                if (value is bool state)
+                {
+                    device.IsDeviceOn = state;
+                }
+            }
+            else if (attributeName == "RemainingBatteryCharge")
+            {
+                if (value is int remainingBatteryCharge && device is Smartwatch sw)
+                {
+                    sw.RemainingBatteryCharge = remainingBatteryCharge;
+                }
+            }
+            else if (attributeName == "OS")
+            {
+                if (value is string OS && device is PC pc)
+                {
+                    pc.OS = OS;
+                }
+            }
+            else if (attributeName == "IP")
+            {
+                if (value is string IP && device is EmbeddedDevice ed)
+                {
+                    ed.IP = IP;
+                }
+            }
+            else if (attributeName == "NetworkName")
+            {
+                if (value is string networkName && device is EmbeddedDevice ed)
+                {
+                    ed.NetworkName = networkName;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
     }
-    
-    try
-    {
-        if (attributeName == "Name")
-        {
-            if (value is string name)
-            {
-                device.Name = name;
-            }
-        }
-        else if (attributeName == "IsTurnedOn")
-        {
-            if (value is bool state)
-            {
-                device.IsDeviceOn = state;
-            }
-        }
-        else if (attributeName == "RemainingBatteryCharge")
-        {
-            if (value is int remainingBatteryCharge && device is Smartwatch sw)
-            {
-                sw.RemainingBatteryCharge = remainingBatteryCharge;
-            }
-        }
-        else if (attributeName == "OS")
-        {
-            if (value is string OS && device is PC pc)
-            {
-                pc.OS = OS;
-            }
-        }
-        else if (attributeName == "IPAddress")
-        {
-            if (value is string IP && device is EmbeddedDevice ed)
-            {
-                ed.IP = IP;
-            }
-        }
-        else if (attributeName == "NetworkName")
-        {
-            if (value is string newNetwork && device is EmbeddedDevice ed)
-            {
-                ed.NetworkName = newNetwork;
-            }
-        }
-    }
-    catch (Exception e)
-    {
-        Console.WriteLine(e.Message);
-    }
-}
 
 
     public void TurnOnDevice(string typeId)
@@ -117,7 +118,14 @@ public class DeviceManager
             {
                 if (device.Id == typeId)
                 {
-                    device.IsDeviceOn = true;
+                    if (device is Smartwatch sw)
+                    {
+                        sw.TurnOn();
+                    }
+                    else if (device is PC pc)
+                    {
+                        pc.launchPC();
+                    }
                 }
             }
         }
@@ -153,31 +161,32 @@ public class DeviceManager
         }
     }
 
-    public void SaveListOfDevices()
+    public void SaveListOfDevices(string filePath)
     {
         var lines = new List<string>();
         foreach (var device in _devices)
         {
             if (device is Smartwatch sw)
             {
-                lines.Add($"SW,{sw.Id},{sw.Name},{sw.IsDeviceOn},{sw.RemainingBatteryCharge}%");
+                lines.Add($"{sw.Id},{sw.Name},{sw.IsDeviceOn},{sw.RemainingBatteryCharge}%");
             }
             else if (device is PC pc)
             {
-                lines.Add($"P,{pc.Id},{pc.Name},{pc.IsDeviceOn},{pc.OS}");
+                lines.Add($"{pc.Id},{pc.Name},{pc.IsDeviceOn},{pc.OS}");
             }
             else if (device is EmbeddedDevice ed)
             {
-                lines.Add($"ED,{ed.Id},{ed.Name},{ed.IP},{ed.NetworkName}");
+                lines.Add($"{ed.Id},{ed.Name},{ed.IP},{ed.NetworkName}");
             }
             else
             {
                 Console.WriteLine("Non-existing device type");
             }
         }
-        File.WriteAllLines(_filePath, lines);
+
+        File.WriteAllLines(filePath, lines);
     }
-    
+
     public void LoadListOfDevices()
     {
         try
@@ -188,7 +197,7 @@ public class DeviceManager
         {
             Console.WriteLine(e.Message);
         }
-        
+
         string[] lines = File.ReadAllLines(_filePath);
         foreach (var line in lines)
         {
@@ -198,10 +207,10 @@ public class DeviceManager
             {
                 var deviceTypeId = parts[0];
                 var deviceName = parts[1];
-                bool deviceOn = Convert.ToBoolean(parts[2]);
 
                 if (deviceTypeId.Contains("SW") && parts.Length == 4)
                 {
+                    var deviceOn = Convert.ToBoolean(parts[2]);
                     int remainingBattery = int.Parse(parts[3].TrimEnd('%'));
                     var sw = new Smartwatch();
                     sw.Id = deviceTypeId;
@@ -212,6 +221,7 @@ public class DeviceManager
                 }
                 else if (deviceTypeId.Contains("P") && parts.Length == 4)
                 {
+                    var deviceOn = Convert.ToBoolean(parts[2]);
                     string os = parts[3];
                     var pc = new PC();
                     pc.Id = deviceTypeId;
@@ -220,10 +230,10 @@ public class DeviceManager
                     pc.OS = os;
                     _devices.Add(pc);
                 }
-                else if (deviceTypeId.Contains("ED") && parts.Length == 5)
+                else if (deviceTypeId.Contains("ED") && parts.Length == 4)
                 {
-                    string ip = parts[3];
-                    string networkName = parts[4];
+                    string ip = parts[2];
+                    string networkName = parts[3];
                     var ed = new EmbeddedDevice();
                     ed.Id = deviceTypeId;
                     ed.Name = deviceName;
@@ -240,10 +250,6 @@ public class DeviceManager
             {
                 Console.WriteLine(e.Message);
             }
-            
         }
-        
-        
     }
-    
 }
