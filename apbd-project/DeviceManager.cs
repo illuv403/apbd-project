@@ -24,14 +24,21 @@ public class DeviceManager
 
     public void RemoveDevice(string typeId)
     {
-        try
+        try 
         {
+            List<Device> devicesToRemove = new List<Device>();
+            
             foreach (var device in _devices)
             {
                 if (device.Id == typeId)
                 {
-                    _devices.Remove(device);
+                    devicesToRemove.Add(device);
                 }
+            }
+
+            foreach (var device in devicesToRemove)
+            {
+                _devices.Remove(device);
             }
         }
         catch (Exception e)
@@ -143,7 +150,7 @@ public class DeviceManager
             {
                 if (device.Id == typeId)
                 {
-                    device.IsDeviceOn = false;
+                    device.TurnOff();
                 }
             }
         }
@@ -203,6 +210,9 @@ public class DeviceManager
         {
             string[] parts = line.Split(',');
 
+            if (parts.Length <= 3)
+                continue;
+            
             try
             {
                 var deviceTypeId = parts[0];

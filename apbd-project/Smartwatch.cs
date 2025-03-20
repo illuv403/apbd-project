@@ -39,7 +39,6 @@ public class Smartwatch : Device, IPowerNotifier
         
         RemainingBatteryCharge -= 10;
         TurnOn();
-        Console.WriteLine("Device turned on");
     }
     
     public override string ToString()

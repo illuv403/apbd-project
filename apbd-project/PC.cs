@@ -19,15 +19,9 @@ public class PC : Device
     {
         if (_os == null)
         {
-            throw EmptySystemException();
+            throw new EmptySystemException();
         }
         TurnOn();
-        Console.WriteLine("PC launched");
-    }
-
-    private Exception EmptySystemException()
-    {
-        return new Exception("Please specify the OS");
     }
     
     public override string ToString()
