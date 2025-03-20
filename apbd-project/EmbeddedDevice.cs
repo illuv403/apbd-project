@@ -40,7 +40,7 @@ public class EmbeddedDevice : Device
     {
         if (_networkName.Contains("MD Ltd."))
         {
-            throw ConnectionException();
+            throw new ConnectionException();
         }
         Console.WriteLine("Connection succeed");
     }
@@ -52,10 +52,6 @@ public class EmbeddedDevice : Device
         Console.WriteLine("Device turned on");
     }
     
-    public Exception ConnectionException()
-    {
-        return new Exception("Connection failed");
-    }
     
     public override string ToString()
     {

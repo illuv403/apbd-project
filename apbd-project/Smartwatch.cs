@@ -30,21 +30,16 @@ public class Smartwatch : Device, IPowerNotifier
         }
     }
 
-    public void TurnOn()
+    public void TurnOnSmartwatch()
     {
-        if (_remainingBatteryCharge <= 11)
+        if (RemainingBatteryCharge <= 11)
         {
-            throw EmptyBatteryException();
+            throw new EmptyBatteryException();
         }
         
-        _remainingBatteryCharge -= 10;
-        IsDeviceOn = true;
+        RemainingBatteryCharge -= 10;
+        TurnOn();
         Console.WriteLine("Device turned on");
-    }
-
-    private Exception EmptyBatteryException()
-    {
-        return new Exception("Battery is empty, please charge up to turn on the device");
     }
     
     public override string ToString()
