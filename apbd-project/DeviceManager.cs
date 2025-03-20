@@ -231,4 +231,9 @@ public class DeviceManager
             }
         }
     }
+    
+    public List<Device> GetListOfDevices()
+    {
+        return _devices;
+    }
 }

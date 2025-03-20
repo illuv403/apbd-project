@@ -4,7 +4,7 @@ var sw = new Smartwatch();
 sw.Id = "SW-2";
 sw.Name = "Smartwatch";
 sw.IsDeviceOn = false;
-sw.RemainingBatteryCharge = 12;
+sw.RemainingBatteryCharge = 55;
 
 try
 {
