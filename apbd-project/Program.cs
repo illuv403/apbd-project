@@ -8,13 +8,13 @@ sw.RemainingBatteryCharge = 55;
 
 try
 {
-    DeviceManager dm = new DeviceManager("Your path");
+    DeviceManager dm = new DeviceManager("path");
     dm.AddDevice(sw);
     dm.RemoveDevice("ED-2");
     dm.EditDeviceData("ED-1", "IP", "192.168.1.100");
     dm.TurnOnDevice("SW-2");
     dm.TurnOffDevice("SW-1");
-    dm.SaveListOfDevices("Your path");
+    dm.SaveListOfDevices("path");
     dm.ShowAllDevices();
 }
 catch (Exception e)

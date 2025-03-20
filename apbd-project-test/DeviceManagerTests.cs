@@ -12,7 +12,7 @@ public class DeviceManagerTests
         sw.IsDeviceOn = false;
         sw.RemainingBatteryCharge = 12;
 
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = new DeviceManager("path");
         dm.AddDevice(sw);
 
         Assert.Contains(sw, dm.GetListOfDevices());
@@ -27,7 +27,7 @@ public class DeviceManagerTests
         sw.IsDeviceOn = false;
         sw.RemainingBatteryCharge = 12;
         
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = new DeviceManager("path");
         dm.AddDevice(sw);
         dm.RemoveDevice("SW-3");
         
@@ -43,7 +43,7 @@ public class DeviceManagerTests
         sw.IsDeviceOn = false;
         sw.RemainingBatteryCharge = 12;
         
-        var dm = new DeviceManager("Your Path");
+        var dm = new DeviceManager("path");
         dm.AddDevice(sw);
         dm.EditDeviceData("SW-3", "IsTurnedOn", true);
         
@@ -59,7 +59,7 @@ public class DeviceManagerTests
         sw.IsDeviceOn = false;
         sw.RemainingBatteryCharge = 12;
         
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = new DeviceManager("path");
         dm.AddDevice(sw);
         dm.TurnOnDevice("SW-3");
         
@@ -75,7 +75,7 @@ public class DeviceManagerTests
         sw.IsDeviceOn = false;
         sw.RemainingBatteryCharge = 12;
         
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = new DeviceManager("path");
         dm.AddDevice(sw);
         dm.TurnOffDevice("SW-3");
         
