@@ -4,18 +4,22 @@ public abstract class Device
 {
     public string Id { get; set; }
     public string Name { get; set; }
-    public bool IsDeviceOn { get; set; }
-    
-    public void TurnOn()
+    public bool IsEnabled { get; set; }
+
+    public Device(string id, string name, bool isEnabled)
     {
-        IsDeviceOn = true;
-        Console.WriteLine("Device turned on");
+        Id = id;
+        Name = name;
+        IsEnabled = isEnabled;
     }
-    
-    public void TurnOff()
+
+    public virtual void TurnOn()
     {
-        IsDeviceOn = false;
-        Console.WriteLine("Device turned off");
+        IsEnabled = true;
     }
-    
+
+    public virtual void TurnOff()
+    {
+        IsEnabled = false;
+    }
 }

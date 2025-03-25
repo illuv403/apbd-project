@@ -1,48 +1,62 @@
 namespace apbd_project;
 
-public class Smartwatch : Device, IPowerNotifier
+public class Smartwatch : Device, IPowerNotify
 {
-    private int _remainingBatteryCharge;
-    public int RemainingBatteryCharge
+    private int _batteryLevel;
+
+    public int BatteryLevel
     {
-        get
-        {
-            return _remainingBatteryCharge;
-        }
+        get => _batteryLevel;
         set
         {
-            if (value >= 0 & value <= 100)
+            if (value < 0 || value > 100)
             {
-                _remainingBatteryCharge = value;
+                throw new ArgumentException("Invalid battery level value. Must be between 0 and 100.", nameof(value));
             }
-            else
+            
+            _batteryLevel = value;
+            if (_batteryLevel < 20)
             {
-                throw new Exception("Battery charge must be between 0 and 100");
+                Notify();
             }
         }
     }
-
-    public void NotifyAboutLowPower()
+    
+    public Smartwatch(string id, string name, bool isEnabled, int batteryLevel) : base(id, name, isEnabled)
     {
-        if (RemainingBatteryCharge < 20)
+        if (CheckId(id))
         {
-            Console.WriteLine("Low battery, please charge up");       
+            throw new ArgumentException("Invalid ID value. Required format: SW-1", id);
         }
+        BatteryLevel = batteryLevel;
     }
 
-    public void TurnOnSmartwatch()
+    public void Notify()
     {
-        if (RemainingBatteryCharge <= 11)
+        Console.WriteLine($"Battery level is low. Current level is: {BatteryLevel}");
+    }
+
+    public override void TurnOn()
+    {
+        if (BatteryLevel < 11)
         {
             throw new EmptyBatteryException();
         }
-        
-        RemainingBatteryCharge -= 10;
-        TurnOn();
+
+        base.TurnOn();
+        BatteryLevel -= 10;
+
+        if (BatteryLevel < 20)
+        {
+            Notify();
+        }
     }
-    
+
     public override string ToString()
     {
-        return $"{Id}, Name: {Name}, Status: {(IsDeviceOn ? "On" : "Off")}, Battery: {_remainingBatteryCharge}%";
+        string enabledStatus = IsEnabled ? "enabled" : "disabled";
+        return $"Smartwatch {Name} ({Id}) is {enabledStatus} and has {BatteryLevel}%";
     }
+    
+    private bool CheckId(string id) => id.Contains("E-");
 }

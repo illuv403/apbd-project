@@ -2,5 +2,5 @@ namespace apbd_project;
 
 public class EmptyBatteryException : Exception
 {
-    public EmptyBatteryException() : base("Battery is empty, please charge up to turn on the device") { }
+    public EmptyBatteryException() : base("Battery level is too low to turn it on.") { }
 }

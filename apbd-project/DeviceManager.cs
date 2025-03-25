@@ -1,45 +1,43 @@
-using System.Text.RegularExpressions;
+using System.Text;
 
 namespace apbd_project;
 
 public class DeviceManager
 {
-    private string _filePath;
-    private List<Device> _devices = new List<Device>();
+    private readonly DeviceParser _deviceParser = new DeviceParser();
+    private string _inputDeviceFile;
+    private const int MaxCapacity = 15;
+    private List<Device> _devices = new(capacity: MaxCapacity);
 
     public DeviceManager(string filePath)
     {
-        _filePath = filePath;
-        LoadListOfDevices();
-    }
+        _inputDeviceFile = filePath;
 
-    public void AddDevice(Device device)
-    {
-        if (_devices.Count >= 15)
+        if (!File.Exists(_inputDeviceFile))
         {
-            Console.WriteLine("Maximum number of devices reached");
-            return;
+            throw new FileNotFoundException("The input device file could not be found.");
         }
 
-        _devices.Add(device);
+        var lines = File.ReadAllLines(_inputDeviceFile);
+        ParseDevices(lines);
     }
 
-    public void RemoveDevice(string typeId)
+    public void AddDevice(Device newDevice)
     {
-        List<Device> devicesToRemove = new List<Device>();
-
-        foreach (var device in _devices)
+        foreach (var storedDevice in _devices)
         {
-            if (device.Id == typeId)
+            if (storedDevice.Id.Equals(newDevice.Id))
             {
-                devicesToRemove.Add(device);
+                throw new ArgumentException($"Device with ID {storedDevice.Id} is already stored.", nameof(newDevice));
             }
         }
 
-        foreach (var device in devicesToRemove)
+        if (_devices.Count >= MaxCapacity)
         {
-            _devices.Remove(device);
+            throw new Exception("Device storage is full.");
         }
+        
+        _devices.Add(newDevice);
     }
 
     public void EditDeviceData(string typeId, string attributeName, object value)
@@ -59,8 +57,7 @@ public class DeviceManager
             Console.WriteLine("Device not found");
             return;
         }
-
-
+        
         if (attributeName == "Name")
         {
             if (value is string name)
@@ -72,166 +69,175 @@ public class DeviceManager
         {
             if (value is bool state)
             {
-                device.IsDeviceOn = state;
+                device.IsEnabled = state;
             }
         }
         else if (attributeName == "RemainingBatteryCharge")
         {
             if (value is int remainingBatteryCharge && device is Smartwatch sw)
             {
-                sw.RemainingBatteryCharge = remainingBatteryCharge;
+                sw.BatteryLevel = remainingBatteryCharge;
             }
         }
         else if (attributeName == "OS")
         {
-            if (value is string OS && device is PC pc)
+            if (value is string OS && device is PersonalComputer pc)
             {
-                pc.OS = OS;
+                pc.OperatingSystem = OS;
             }
         }
         else if (attributeName == "IP")
         {
-            if (value is string IP && device is EmbeddedDevice ed)
+            if (value is string IP && device is Embedded ed)
             {
-                ed.IP = IP;
+                ed.IpAddress = IP;
             }
         }
         else if (attributeName == "NetworkName")
         {
-            if (value is string networkName && device is EmbeddedDevice ed)
+            if (value is string networkName && device is Embedded ed)
             {
                 ed.NetworkName = networkName;
             }
         }
     }
 
-
-    public void TurnOnDevice(string typeId)
+    public void RemoveDeviceById(string deviceId)
     {
-        foreach (var device in _devices)
+        Device? targetDevice = null;
+        foreach (var storedDevice in _devices)
         {
-            if (device.Id == typeId)
+            if (storedDevice.Id.Equals(deviceId))
             {
-                if (device is Smartwatch sw)
-                {
-                    sw.TurnOnSmartwatch();
-                }
-                else if (device is PC pc)
-                {
-                    pc.launchPC();
-                }
+                targetDevice = storedDevice;
+                break;
             }
         }
+
+        if (targetDevice == null)
+        {
+            throw new ArgumentException($"Device with ID {deviceId} is not stored.", nameof(deviceId));
+        }
+        
+        _devices.Remove(targetDevice);
     }
 
-    public void TurnOffDevice(string typeId)
+    public void TurnOnDevice(string id)
     {
-        foreach (var device in _devices)
+        foreach (var storedDevice in _devices)
         {
-            if (device.Id == typeId)
+            if (storedDevice.Id.Equals(id))
             {
-                device.TurnOff();
+                storedDevice.TurnOn();
+                return;
             }
         }
+        
+        throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
+    }
+
+    public void TurnOffDevice(string id)
+    {
+        foreach (var storedDevice in _devices)
+        {
+            if (storedDevice.Id.Equals(id))
+            {
+                storedDevice.TurnOff();
+                return;
+            }
+        }
+        
+        throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
+    }
+
+    public Device? GetDeviceById(string id)
+    {
+        foreach (var storedDevice in _devices)
+        {
+            if (storedDevice.Id.Equals(id))
+            {
+                return storedDevice;
+            }
+        }
+
+        return null;
     }
 
     public void ShowAllDevices()
     {
-        foreach (var device in _devices)
+        foreach (var storedDevices in _devices)
         {
-            Console.WriteLine($"Device: {device}\n");
+            Console.WriteLine(storedDevices.ToString());
         }
     }
 
-    public void SaveListOfDevices(string filePath)
+    public void SaveDevices(string outputPath)
     {
-        var lines = new List<string>();
-        foreach (var device in _devices)
+        StringBuilder devicesSb = new();
+
+        foreach (var storedDevice in _devices)
         {
-            if (device is Smartwatch sw)
+            if (storedDevice is Smartwatch smartwatchCopy)
             {
-                lines.Add($"{sw.Id},{sw.Name},{sw.IsDeviceOn},{sw.RemainingBatteryCharge}%");
+                devicesSb.AppendLine($"{smartwatchCopy.Id},{smartwatchCopy.Name}," +
+                                     $"{smartwatchCopy.IsEnabled},{smartwatchCopy.BatteryLevel}%");
             }
-            else if (device is PC pc)
+            else if (storedDevice is PersonalComputer pcCopy)
             {
-                lines.Add($"{pc.Id},{pc.Name},{pc.IsDeviceOn},{pc.OS}");
-            }
-            else if (device is EmbeddedDevice ed)
-            {
-                lines.Add($"{ed.Id},{ed.Name},{ed.IP},{ed.NetworkName}");
+                devicesSb.AppendLine($"{pcCopy.Id},{pcCopy.Name}," +
+                                     $"{pcCopy.IsEnabled},{pcCopy.OperatingSystem}");
             }
             else
             {
-                Console.WriteLine("Non-existing device type");
+                var embeddedCopy = storedDevice as Embedded;
+                devicesSb.AppendLine($"{embeddedCopy.Id},{embeddedCopy.Name}," +
+                                     $"{embeddedCopy.IsEnabled},{embeddedCopy.IpAddress}," +
+                                     $"{embeddedCopy.NetworkName}");
             }
         }
-
-        File.WriteAllLines(filePath, lines);
+        
+        File.WriteAllLines(outputPath, devicesSb.ToString().Split('\n'));
     }
 
-    public void LoadListOfDevices()
+    private void ParseDevices(string[] lines)
     {
-        if (!File.Exists(_filePath))
+        for (int i = 0; i < lines.Length; i++)
         {
-            Console.WriteLine("File not found");
-            return;
-        }
-
-        string[] lines = File.ReadAllLines(_filePath);
-        foreach (var line in lines)
-        {
-            string[] parts = line.Split(',');
-
-            if (parts.Length <= 3)
-                continue;
-
-
-            var deviceTypeId = parts[0];
-            var deviceName = parts[1];
-
-            if (deviceTypeId.Contains("SW") && parts.Length == 4)
+            try
             {
-                var deviceOn = Convert.ToBoolean(parts[2]);
-                int remainingBattery = int.Parse(parts[3].TrimEnd('%'));
-                var sw = new Smartwatch();
-                sw.Id = deviceTypeId;
-                sw.Name = deviceName;
-                sw.IsDeviceOn = deviceOn;
-                sw.RemainingBatteryCharge = remainingBattery;
-                _devices.Add(sw);
-            }
-            else if (deviceTypeId.Contains("P") && parts.Length == 4)
-            {
-                var deviceOn = Convert.ToBoolean(parts[2]);
-                string os = parts[3];
-                var pc = new PC();
-                pc.Id = deviceTypeId;
-                pc.Name = deviceName;
-                pc.IsDeviceOn = deviceOn;
-                pc.OS = os;
-                _devices.Add(pc);
-            }
-            else if (deviceTypeId.Contains("ED") && parts.Length == 4)
-            {
-                string ip = parts[2];
-                string networkName = parts[3];
-                
-                if (!Regex.IsMatch(ip,
-                        @"^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$"))
+                Device parsedDevice;
+
+                if (lines[i].StartsWith("P-"))
                 {
-                    continue;
+                    parsedDevice = _deviceParser.ParsePC(lines[i], i);
                 }
-                
-                var ed = new EmbeddedDevice();
-                ed.Id = deviceTypeId;
-                ed.Name = deviceName;
-                ed.IP = ip;
-                ed.NetworkName = networkName;
-                _devices.Add(ed);
+                else if (lines[i].StartsWith("SW-"))
+                {
+                    parsedDevice = _deviceParser.ParseSmartwatch(lines[i], i);
+                }
+                else if (lines[i].StartsWith("ED-"))
+                {
+                    parsedDevice = _deviceParser.ParseEmbedded(lines[i], i);
+                }
+                else
+                {
+                    throw new ArgumentException($"Line {i} is corrupted.");
+                }
+
+                AddDevice(parsedDevice);
+            }
+            catch (ArgumentException argEx)
+            {
+                Console.WriteLine(argEx.Message);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(
+                    $"Something went wrong during parsing this line: {lines[i]}. The exception message: {ex.Message}");
             }
         }
     }
-    
+
     public List<Device> GetListOfDevices()
     {
         return _devices;
