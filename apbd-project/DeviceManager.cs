@@ -8,18 +8,12 @@ public class DeviceManager : IDeviceManager
     private string _inputDeviceFile;
     private const int MaxCapacity = 15;
     private List<Device> _devices = new(capacity: MaxCapacity);
+    private FileManager _fileManager = new FileManager();
 
     public DeviceManager(string filePath)
     {
-        _inputDeviceFile = filePath;
-
-        if (!File.Exists(_inputDeviceFile))
-        {
-            throw new FileNotFoundException("The input device file could not be found.");
-        }
-
-        var lines = File.ReadAllLines(_inputDeviceFile);
-        ParseDevices(lines);
+       var lines = _fileManager.ReadLines(filePath);
+       _devices = _fileManager.ParseDevices(lines);
     }
 
     public void AddDevice(Device newDevice)
@@ -171,69 +165,7 @@ public class DeviceManager : IDeviceManager
 
     public void SaveDevices(string outputPath)
     {
-        StringBuilder devicesSb = new();
-
-        foreach (var storedDevice in _devices)
-        {
-            if (storedDevice is Smartwatch smartwatchCopy)
-            {
-                devicesSb.AppendLine($"{smartwatchCopy.Id},{smartwatchCopy.Name}," +
-                                     $"{smartwatchCopy.IsEnabled},{smartwatchCopy.BatteryLevel}%");
-            }
-            else if (storedDevice is PersonalComputer pcCopy)
-            {
-                devicesSb.AppendLine($"{pcCopy.Id},{pcCopy.Name}," +
-                                     $"{pcCopy.IsEnabled},{pcCopy.OperatingSystem}");
-            }
-            else
-            {
-                var embeddedCopy = storedDevice as Embedded;
-                devicesSb.AppendLine($"{embeddedCopy.Id},{embeddedCopy.Name}," +
-                                     $"{embeddedCopy.IsEnabled},{embeddedCopy.IpAddress}," +
-                                     $"{embeddedCopy.NetworkName}");
-            }
-        }
-
-        File.WriteAllLines(outputPath, devicesSb.ToString().Split('\n'));
-    }
-
-    private void ParseDevices(string[] lines)
-    {
-        for (int i = 0; i < lines.Length; i++)
-        {
-            try
-            {
-                Device parsedDevice;
-
-                if (lines[i].StartsWith("P-"))
-                {
-                    parsedDevice = _deviceParser.ParsePC(lines[i], i);
-                }
-                else if (lines[i].StartsWith("SW-"))
-                {
-                    parsedDevice = _deviceParser.ParseSmartwatch(lines[i], i);
-                }
-                else if (lines[i].StartsWith("ED-"))
-                {
-                    parsedDevice = _deviceParser.ParseEmbedded(lines[i], i);
-                }
-                else
-                {
-                    throw new ArgumentException($"Line {i} is corrupted.");
-                }
-
-                AddDevice(parsedDevice);
-            }
-            catch (ArgumentException argEx)
-            {
-                Console.WriteLine(argEx.Message);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(
-                    $"Something went wrong during parsing this line: {lines[i]}. The exception message: {ex.Message}");
-            }
-        }
+       _fileManager.SaveDevices(outputPath, _devices);
     }
 
     public List<Device> GetListOfDevices()
