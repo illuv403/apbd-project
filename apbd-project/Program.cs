@@ -2,7 +2,7 @@
 
 try
 {
-    DeviceManager deviceManager = new("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+    var deviceManager = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
 
     Console.WriteLine("Devices presented after file read.");
     deviceManager.ShowAllDevices();
@@ -25,7 +25,8 @@ try
 
     Console.WriteLine("Let's install OS for this PC");
 
-    deviceManager.EditDeviceData("ED-1", "IP", "192.168.1.100");
+    PersonalComputer editComputer = new("P-2", "ThinkPad T440", true, "Arch Linux");
+    deviceManager.EditDeviceData(editComputer);
 
     Console.WriteLine("Let's try to enable this PC");
     deviceManager.TurnOnDevice("P-2");

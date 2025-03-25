@@ -2,7 +2,7 @@ using System.Text;
 
 namespace apbd_project;
 
-public class DeviceManager
+public class DeviceManager : IDeviceManager
 {
     private readonly DeviceParser _deviceParser = new DeviceParser();
     private string _inputDeviceFile;
@@ -36,68 +36,66 @@ public class DeviceManager
         {
             throw new Exception("Device storage is full.");
         }
-        
+
         _devices.Add(newDevice);
     }
 
-    public void EditDeviceData(string typeId, string attributeName, object value)
+    public void EditDeviceData(Device editDevice)
     {
-        Device? device = null;
-
-        foreach (var dev in _devices)
+        var targetDeviceIndex = -1;
+        for (var index = 0; index < _devices.Count; index++)
         {
-            if (dev.Id == typeId)
+            var storedDevice = _devices[index];
+            if (storedDevice.Id.Equals(editDevice.Id))
             {
-                device = dev;
+                targetDeviceIndex = index;
+                break;
             }
         }
 
-        if (device == null)
+        if (targetDeviceIndex == -1)
         {
-            Console.WriteLine("Device not found");
-            return;
+            throw new ArgumentException($"Device with ID {editDevice.Id} is not stored.", nameof(editDevice));
         }
-        
-        if (attributeName == "Name")
+
+        if (editDevice is Smartwatch newSmartwatch)
         {
-            if (value is string name)
+            if (_devices[targetDeviceIndex] is Smartwatch existingSmartwatch)
             {
-                device.Name = name;
+                existingSmartwatch.IsEnabled = newSmartwatch.IsEnabled;
+                existingSmartwatch.BatteryLevel = newSmartwatch.BatteryLevel;
+            }
+            else
+            {
+                throw new ArgumentException($"Type mismatch between devices. " +
+                                            $"Target device has type {_devices[targetDeviceIndex].GetType().Name}");
             }
         }
-        else if (attributeName == "IsTurnedOn")
+        else if (editDevice is PersonalComputer newPC)
         {
-            if (value is bool state)
+            if (_devices[targetDeviceIndex] is PersonalComputer existingPC)
             {
-                device.IsEnabled = state;
+                existingPC.IsEnabled = newPC.IsEnabled;
+                existingPC.OperatingSystem = newPC.OperatingSystem;
+            }
+            else
+            {
+                throw new ArgumentException($"Type mismatch between devices. " +
+                                            $"Target device has type {_devices[targetDeviceIndex].GetType().Name}");
             }
         }
-        else if (attributeName == "RemainingBatteryCharge")
+        else if (editDevice is Embedded newEmbedded)
         {
-            if (value is int remainingBatteryCharge && device is Smartwatch sw)
+            if (_devices[targetDeviceIndex] is Embedded existingEmbedded)
             {
-                sw.BatteryLevel = remainingBatteryCharge;
+                existingEmbedded.IsEnabled = newEmbedded.IsEnabled;
+                existingEmbedded.IpAddress = newEmbedded.IpAddress;
+                existingEmbedded.NetworkName = newEmbedded.NetworkName;
             }
-        }
-        else if (attributeName == "OS")
-        {
-            if (value is string OS && device is PersonalComputer pc)
+            else
             {
-                pc.OperatingSystem = OS;
-            }
-        }
-        else if (attributeName == "IP")
-        {
-            if (value is string IP && device is Embedded ed)
-            {
-                ed.IpAddress = IP;
-            }
-        }
-        else if (attributeName == "NetworkName")
-        {
-            if (value is string networkName && device is Embedded ed)
-            {
-                ed.NetworkName = networkName;
+                throw new ArgumentException($"Type mismatch between devices. " +
+                                            $"Target device has type {_devices[targetDeviceIndex].GetType().Name}");
             }
         }
     }
@@ -118,7 +116,7 @@ public class DeviceManager
         {
             throw new ArgumentException($"Device with ID {deviceId} is not stored.", nameof(deviceId));
         }
-        
+
         _devices.Remove(targetDevice);
     }
 
@@ -132,7 +130,7 @@ public class DeviceManager
                 return;
             }
         }
-        
+
         throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
     }
 
@@ -146,7 +144,7 @@ public class DeviceManager
                 return;
             }
         }
-        
+
         throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
     }
 
@@ -195,7 +193,7 @@ public class DeviceManager
                                      $"{embeddedCopy.NetworkName}");
             }
         }
-        
+
         File.WriteAllLines(outputPath, devicesSb.ToString().Split('\n'));
     }
 

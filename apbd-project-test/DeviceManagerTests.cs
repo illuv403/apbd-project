@@ -8,7 +8,7 @@ public class DeviceManagerTests
     {
         var sw = new Smartwatch("SW-3", "Smartwatch", false, 12);
 
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
         dm.AddDevice(sw);
 
         Assert.Contains(sw, dm.GetListOfDevices());
@@ -19,7 +19,7 @@ public class DeviceManagerTests
     {
         var sw = new Smartwatch("SW-3", "Smartwatch", false, 12);
 
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
         dm.AddDevice(sw);
         dm.RemoveDeviceById("SW-3");
         
@@ -31,9 +31,10 @@ public class DeviceManagerTests
     {
         var sw = new Smartwatch("SW-3", "Smartwatch", false, 12);
 
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
         dm.AddDevice(sw);
-        dm.EditDeviceData("SW-3", "IsTurnedOn", true);
+        var editSmartwatch = new Smartwatch("SW-3", "Smartwatch", true, 12);
+        dm.EditDeviceData(editSmartwatch);
         
         Assert.True(sw.IsEnabled);
     }
@@ -43,7 +44,7 @@ public class DeviceManagerTests
     {
         var sw = new Smartwatch("SW-3", "Smartwatch", false, 12);
         
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
         dm.AddDevice(sw);
         dm.TurnOnDevice("SW-3");
         
@@ -55,7 +56,7 @@ public class DeviceManagerTests
     {
         var sw = new Smartwatch("SW-3", "Smartwatch", false, 12);
         
-        var dm = new DeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
+        var dm = DMFactory.InitializeDeviceManager("/Users/deb/Desktop/PJATK/APBD/apbd-project/input.txt");
         dm.AddDevice(sw);
         dm.TurnOffDevice("SW-3");
         
