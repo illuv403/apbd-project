@@ -1,5 +1,8 @@
 namespace apbd_project;
 
+/// <summary>
+/// Provides methods for parsing devices
+/// </summary>
 public class DeviceParser
 {
     private const int MinimumRequiredElements = 4;
@@ -8,6 +11,12 @@ public class DeviceParser
     private const int DeviceNamePosition = 1;
     private const int EnabledStatusPosition = 2;
 
+    /// <summary>
+    /// Parses PersonalComputer device from line
+    /// </summary>
+    /// <param name="line">The string containing device information</param>
+    /// <param name="lineNumber">The line number for error tracking</param>
+    /// <exception cref="ArgumentException"></exception>
     public PersonalComputer ParsePC(string line, int lineNumber)
     {
         const int SystemPosition = 3;
@@ -28,6 +37,12 @@ public class DeviceParser
             isEnabled, infoSplits[SystemPosition]);
     }
 
+    /// <summary>
+    /// Parses Smartwatch device from line
+    /// </summary>
+    /// <param name="line">The string containing device information</param>
+    /// <param name="lineNumber">The line number for error tracking</param>
+    /// <exception cref="ArgumentException"></exception>
     public Smartwatch ParseSmartwatch(string line, int lineNumber)
     {
         const int BatteryPosition = 3;
@@ -53,6 +68,12 @@ public class DeviceParser
             isEnabled, batteryLevel);
     }
 
+    /// <summary>
+    /// Parses Embedded device from line
+    /// </summary>
+    /// <param name="line">The string containing device information</param>
+    /// <param name="lineNumber">The line number for error tracking</param>
+    /// <exception cref="ArgumentException"></exception>
     public Embedded ParseEmbedded(string line, int lineNumber)
     {
         const int IpAddressPosition = 3; 

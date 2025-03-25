@@ -2,6 +2,9 @@ using System.Text;
 
 namespace apbd_project;
 
+/// <summary>
+/// Device manager class that implements IDeviceManager interface
+/// </summary>
 public class DeviceManager : IDeviceManager
 {
     private readonly DeviceParser _deviceParser = new DeviceParser();
@@ -10,12 +13,22 @@ public class DeviceManager : IDeviceManager
     private List<Device> _devices = new(capacity: MaxCapacity);
     private FileManager _fileManager = new FileManager();
 
+    /// <summary>
+    /// DeviceManager class constructor which reads all the lines from file and parses them
+    /// </summary>
+    /// <param name="filePath">Path to the file from which we will read all the lines</param>
     public DeviceManager(string filePath)
     {
        var lines = _fileManager.ReadLines(filePath);
        _devices = _fileManager.ParseDevices(lines);
     }
 
+    /// <summary>
+    /// Method to add device to list of devices
+    /// </summary>
+    /// <param name="newDevice">New device object that we will add</param>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="Exception"></exception>
     public void AddDevice(Device newDevice)
     {
         foreach (var storedDevice in _devices)
@@ -34,6 +47,11 @@ public class DeviceManager : IDeviceManager
         _devices.Add(newDevice);
     }
 
+    /// <summary>
+    /// Method that edits device data using boxing/unboxing
+    /// </summary>
+    /// <param name="editDevice">An edited device object</param>
+    /// <exception cref="ArgumentException"></exception>
     public void EditDeviceData(Device editDevice)
     {
         var targetDeviceIndex = -1;
@@ -94,6 +112,11 @@ public class DeviceManager : IDeviceManager
         }
     }
 
+    /// <summary>
+    /// Method to remove device from the list of devices
+    /// </summary>
+    /// <param name="deviceId">Id of the device that needs to be removed</param>
+    /// <exception cref="ArgumentException"></exception>
     public void RemoveDeviceById(string deviceId)
     {
         Device? targetDevice = null;
@@ -113,7 +136,12 @@ public class DeviceManager : IDeviceManager
 
         _devices.Remove(targetDevice);
     }
-
+    
+    /// <summary>
+    /// Method used to turn on device 
+    /// </summary>
+    /// <param name="id">Id of the device that we need to turn on</param>
+    /// <exception cref="ArgumentException"></exception>
     public void TurnOnDevice(string id)
     {
         foreach (var storedDevice in _devices)
@@ -128,6 +156,11 @@ public class DeviceManager : IDeviceManager
         throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
     }
 
+    /// <summary>
+    /// Method used to turn off device 
+    /// </summary>
+    /// <param name="id">Id of the device that we need to turn off</param>
+    /// <exception cref="ArgumentException"></exception>
     public void TurnOffDevice(string id)
     {
         foreach (var storedDevice in _devices)
@@ -142,6 +175,11 @@ public class DeviceManager : IDeviceManager
         throw new ArgumentException($"Device with ID {id} is not stored.", nameof(id));
     }
 
+    /// <summary>
+    /// Get instance of some device by id
+    /// </summary>
+    /// <param name="id">Id of the device we want to find</param>
+    /// <returns></returns>
     public Device? GetDeviceById(string id)
     {
         foreach (var storedDevice in _devices)
@@ -155,6 +193,9 @@ public class DeviceManager : IDeviceManager
         return null;
     }
 
+    /// <summary>
+    /// Method that just shows all the devices we store 
+    /// </summary>
     public void ShowAllDevices()
     {
         foreach (var storedDevices in _devices)
@@ -163,11 +204,18 @@ public class DeviceManager : IDeviceManager
         }
     }
 
+    /// <summary>
+    /// Method that implements FileManager's save devices method and saves a list of devices with proper formatting to file in outputPath destination
+    /// </summary>
+    /// <param name="outputPath">A path to the file to which list of devices needs to be saved</param>
     public void SaveDevices(string outputPath)
     {
        _fileManager.SaveDevices(outputPath, _devices);
     }
 
+    /// <summary>
+    /// Method that returns list of devices(Added for unit testing)
+    /// </summary>
     public List<Device> GetListOfDevices()
     {
         return _devices;

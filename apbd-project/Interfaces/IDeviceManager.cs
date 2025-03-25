@@ -1,5 +1,8 @@
 namespace apbd_project;
 
+/// <summary>
+/// Device Manager interface created to implement factory pattern
+/// </summary>
 public interface IDeviceManager
 {
     void AddDevice(Device newDevice);
