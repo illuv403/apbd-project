@@ -20,13 +20,14 @@ public class Embedded : Device
         get => _ipAddress;
         set
         {
-            Regex ipRegex = new Regex("^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$");
-            if (ipRegex.IsMatch(value))
+            if (!Regex.IsMatch(value,
+                    @"^(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9])\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[1-9]|0)\.(25[0-5]|2[0-4][0-9]|[0-1]{1}[0-9]{2}|[1-9]{1}[0-9]{1}|[0-9])$"))
             {
-                _ipAddress = value;
+                throw new ArgumentException("Wrong IP address format.");  
             }
+            _ipAddress = value;
 
-            throw new ArgumentException("Wrong IP address format.");
+              
         }
     }
     
