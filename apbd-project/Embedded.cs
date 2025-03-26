@@ -14,7 +14,7 @@ public class Embedded : Device
     /// <summary>
     /// IpAddress property which checks for right IP pattern when setting new one 
     /// </summary>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if IpAddress is not in IPV4 format</exception>
     public string IpAddress
     {
         get => _ipAddress;
@@ -34,12 +34,12 @@ public class Embedded : Device
     /// <summary>
     /// Embedded device class constructor which sets network name and IP address
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
-    /// <param name="isEnabled"></param>
-    /// <param name="ipAddress"></param>
-    /// <param name="networkName"></param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="id">ID of embedded device in format of "E-"</param>
+    /// <param name="name">Just the name of the embedded device</param>
+    /// <param name="isEnabled">Is embedded device on</param>
+    /// <param name="ipAddress">Ip address of the ED</param>
+    /// <param name="networkName">The name of the network (must contain "MD Ltd.")</param>
+    /// <exception cref="ArgumentException">Is being thrown if the id is not in the right format</exception>
     public Embedded(string id, string name, bool isEnabled, string ipAddress, string networkName) : base(id, name, isEnabled)
     {
         if (CheckId(id))
@@ -77,7 +77,7 @@ public class Embedded : Device
     /// <summary>
     /// Connect method which checks if network name contains MD Ltd. and connects device
     /// </summary>
-    /// <exception cref="ConnectionException"></exception>
+    /// <exception cref="ConnectionException">Is being thrown if network name does not contain "MD Ltd."</exception>
     private void Connect()
     {
         if (NetworkName.Contains("MD Ltd."))
