@@ -20,7 +20,7 @@ public class DeviceManager : IDeviceManager
     public DeviceManager(string filePath)
     {
        var lines = _fileManager.ReadLines(filePath);
-       _devices = _fileManager.ParseDevices(lines);
+       _devices = _deviceParser.ParseDevices(lines);
     }
 
     /// <summary>
