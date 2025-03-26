@@ -10,11 +10,11 @@ public class PersonalComputer : Device
     /// <summary>
     /// PersonalComputer class constructor which checks if id is right and sets Operating System
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
-    /// <param name="isEnabled"></param>
-    /// <param name="operatingSystem"></param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="id">Id of the device in format "P-"</param>
+    /// <param name="name">Name of the device</param>
+    /// <param name="isEnabled">Is device turned on</param>
+    /// <param name="operatingSystem">Operating system of the pc</param>
+    /// <exception cref="ArgumentException">Is being thrown if Id is incorrectly formatted</exception>
     public PersonalComputer(string id, string name, bool isEnabled, string? operatingSystem) : base(id, name, isEnabled)
     {
         if (!CheckId(id))

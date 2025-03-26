@@ -12,7 +12,8 @@ public class FileManager
     /// Method to read all lines from the file and returns an array of lines
     /// </summary>
     /// <param name="filePath">A path to the file from which we read lines</param>
-    /// <exception cref="FileNotFoundException"></exception>
+    /// <returns>A list of strings with all lines from the file in it</returns>
+    /// <exception cref="FileNotFoundException">Is being thrown if file was not found at specified path</exception>
     public string[] ReadLines(string filePath)
     {
         if (!File.Exists(filePath))
@@ -59,7 +60,7 @@ public class FileManager
     /// A method which parses all the lines from the list of lines
     /// </summary>
     /// <param name="lines">A list of lines which were read from the file</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if there is an exception while parsing of devices</exception>
     public List<Device> ParseDevices(string[] lines)
     {
         List<Device> devices = new List<Device>();

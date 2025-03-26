@@ -16,7 +16,8 @@ public class DeviceParser
     /// </summary>
     /// <param name="line">The string containing device information</param>
     /// <param name="lineNumber">The line number for error tracking</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>Returns new instance of PersonalComputer class</returns>
+    /// <exception cref="ArgumentException">Is being thrown if any problem exception with parsing of device is met</exception>
     public PersonalComputer ParsePC(string line, int lineNumber)
     {
         const int SystemPosition = 3;
@@ -42,7 +43,8 @@ public class DeviceParser
     /// </summary>
     /// <param name="line">The string containing device information</param>
     /// <param name="lineNumber">The line number for error tracking</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>Returns new instance of Smartwatch class</returns>
+    /// <exception cref="ArgumentException">Is being thrown if any problem exception with parsing of device is met</exception>
     public Smartwatch ParseSmartwatch(string line, int lineNumber)
     {
         const int BatteryPosition = 3;
@@ -73,7 +75,8 @@ public class DeviceParser
     /// </summary>
     /// <param name="line">The string containing device information</param>
     /// <param name="lineNumber">The line number for error tracking</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <returns>Returns new instance of Embedded class</returns>
+    /// <exception cref="ArgumentException">Is being thrown if any problem exception with parsing of device is met</exception>
     public Embedded ParseEmbedded(string line, int lineNumber)
     {
         const int IpAddressPosition = 3; 

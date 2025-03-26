@@ -1,7 +1,7 @@
 namespace apbd_project;
 
 /// <summary>
-/// Abstract class device from which all devices inherit
+/// Parent abstract class device from which all devices inherit
 /// </summary>
 public abstract class Device
 {
@@ -12,9 +12,9 @@ public abstract class Device
     /// <summary>
     /// Device class constructor
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
-    /// <param name="isEnabled"></param>
+    /// <param name="id">Id of the device</param>
+    /// <param name="name">Name of the device</param>
+    /// <param name="isEnabled">State of the device e.g. is it turned on or not</param>
     public Device(string id, string name, bool isEnabled)
     {
         Id = id;

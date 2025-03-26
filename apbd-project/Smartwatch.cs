@@ -10,7 +10,7 @@ public class Smartwatch : Device, IPowerNotify
     /// <summary>
     /// Battery Level property which checks if new battery level is between 0 and 100 and notifies about low battery level if it is smaller than 20
     /// </summary>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if battery level is not between 0 and 100</exception>
     public int BatteryLevel
     {
         get => _batteryLevel;
@@ -32,11 +32,11 @@ public class Smartwatch : Device, IPowerNotify
     ///<summary>
     /// Smartwatch class constructor which checks ID format and sets new Battery Level 
     /// </summary>
-    /// <param name="id"></param>
-    /// <param name="name"></param>
-    /// <param name="isEnabled"></param>
-    /// <param name="batteryLevel"></param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="id">Id of the device in format "SW-"</param>
+    /// <param name="name">Name of the device</param>
+    /// <param name="isEnabled">Is device turned on</param>
+    /// <param name="batteryLevel">Battery level of the device (0-100)</param>
+    /// <exception cref="ArgumentException">Is being thrown if device id is of the wrong format not "SW-""</exception>
     public Smartwatch(string id, string name, bool isEnabled, int batteryLevel) : base(id, name, isEnabled)
     {
         if (CheckId(id))

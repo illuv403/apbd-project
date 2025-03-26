@@ -27,8 +27,8 @@ public class DeviceManager : IDeviceManager
     /// Method to add device to list of devices
     /// </summary>
     /// <param name="newDevice">New device object that we will add</param>
-    /// <exception cref="ArgumentException"></exception>
-    /// <exception cref="Exception"></exception>
+    /// <exception cref="ArgumentException">Is being thrown is device with some Id is already being stored</exception>
+    /// <exception cref="Exception">Is being thrown if storage is full e.g. there is more than 15 devices</exception>
     public void AddDevice(Device newDevice)
     {
         foreach (var storedDevice in _devices)
@@ -51,7 +51,7 @@ public class DeviceManager : IDeviceManager
     /// Method that edits device data using boxing/unboxing
     /// </summary>
     /// <param name="editDevice">An edited device object</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if there is any exception with device passed as argument</exception>
     public void EditDeviceData(Device editDevice)
     {
         var targetDeviceIndex = -1;
@@ -116,7 +116,7 @@ public class DeviceManager : IDeviceManager
     /// Method to remove device from the list of devices
     /// </summary>
     /// <param name="deviceId">Id of the device that needs to be removed</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if device with id specified doesn't exist</exception>
     public void RemoveDeviceById(string deviceId)
     {
         Device? targetDevice = null;
@@ -141,7 +141,7 @@ public class DeviceManager : IDeviceManager
     /// Method used to turn on device 
     /// </summary>
     /// <param name="id">Id of the device that we need to turn on</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if device with id specified doesn't exist</exception>
     public void TurnOnDevice(string id)
     {
         foreach (var storedDevice in _devices)
@@ -160,7 +160,7 @@ public class DeviceManager : IDeviceManager
     /// Method used to turn off device 
     /// </summary>
     /// <param name="id">Id of the device that we need to turn off</param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="ArgumentException">Is being thrown if device with id specified doesn't exist</exception>
     public void TurnOffDevice(string id)
     {
         foreach (var storedDevice in _devices)
@@ -179,7 +179,7 @@ public class DeviceManager : IDeviceManager
     /// Get instance of some device by id
     /// </summary>
     /// <param name="id">Id of the device we want to find</param>
-    /// <returns></returns>
+    /// <returns>Device with id specified</returns>
     public Device? GetDeviceById(string id)
     {
         foreach (var storedDevice in _devices)
