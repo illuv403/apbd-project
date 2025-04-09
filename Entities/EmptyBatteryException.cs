@@ -1,4 +1,4 @@
-namespace apbd_project;
+namespace Entities;
 
 /// <summary>
 /// Exception which is being thrown when battery level is too low to turn on the device

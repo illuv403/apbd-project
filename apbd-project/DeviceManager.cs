@@ -1,4 +1,5 @@
 using System.Text;
+using Entities;
 
 namespace apbd_project;
 
@@ -10,19 +11,14 @@ public class DeviceManager : IDeviceManager
     private readonly DeviceParser _deviceParser = new DeviceParser();
     private string _inputDeviceFile;
     private const int MaxCapacity = 15;
-    private List<Device> _devices = new(capacity: MaxCapacity);
+    private List<Device> _devices;
     private FileManager _fileManager = new FileManager();
-
-    /// <summary>
-    /// DeviceManager class constructor which reads all the lines from file and parses them
-    /// </summary>
-    /// <param name="filePath">Path to the file from which we will read all the lines</param>
-    public DeviceManager(string filePath)
+    
+    public DeviceManager()
     {
-       var lines = _fileManager.ReadLines(filePath);
-       _devices = _deviceParser.ParseDevices(lines);
+        _devices = new List<Device>();
     }
-
+    
     /// <summary>
     /// Method to add device to list of devices
     /// </summary>

@@ -1,4 +1,4 @@
-namespace apbd_project;
+namespace Entities;
 
 /// <summary>
 /// Exception which is being thrown when the network name is wrong

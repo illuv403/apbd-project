@@ -1,5 +1,3 @@
-using apbd_project;
-
 namespace Entities;
 
 /// <summary>

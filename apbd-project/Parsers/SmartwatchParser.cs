@@ -1,3 +1,5 @@
+using Entities;
+
 namespace apbd_project;
 
 public class SmartwatchParser : IParser
