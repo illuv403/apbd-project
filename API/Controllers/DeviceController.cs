@@ -27,7 +27,7 @@ public class DeviceController : ControllerBase
         var devicesInformation = devices.Select(d => new
         {
             d.Id,
-            Type = d.GetType().Name
+            d.Name
         });
         return Results.Ok(devicesInformation);
     }
