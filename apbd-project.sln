@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apbd-project", "apbd-projec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apbd-project-test", "apbd-project-test\apbd-project-test.csproj", "{DF63E82E-B920-4872-9C30-63F7CD6BAE3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{A428B6C9-B074-4786-A2EF-01334B3D23DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{DF63E82E-B920-4872-9C30-63F7CD6BAE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF63E82E-B920-4872-9C30-63F7CD6BAE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF63E82E-B920-4872-9C30-63F7CD6BAE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A428B6C9-B074-4786-A2EF-01334B3D23DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A428B6C9-B074-4786-A2EF-01334B3D23DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A428B6C9-B074-4786-A2EF-01334B3D23DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A428B6C9-B074-4786-A2EF-01334B3D23DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
