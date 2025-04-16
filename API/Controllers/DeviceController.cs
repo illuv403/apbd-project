@@ -27,7 +27,8 @@ public class DeviceController : ControllerBase
         var devicesInformation = devices.Select(d => new
         {
             d.Id,
-            d.Name
+            d.Name,
+            d.IsEnabled
         });
         return Results.Ok(devicesInformation);
     }
@@ -43,30 +44,77 @@ public class DeviceController : ControllerBase
         var device = _deviceManager.GetDeviceById(id);
         return Results.Ok(device);
     }
-        // I am a creep, I am weirdo, what the hell am I doing here?
-        // I dont belong here...
-    //  <summary>
-    //Creates a new device.
-    /// </summary>
-    /// <param name="device">The device to create</param>
-    /// <returns>Success message</returns>
-    [HttpPost]
-    public IResult CreateDevice([FromBody] Device device)
-    {
-        _deviceManager.AddDevice(device);
-        return Results.Created();
-    }
 
     /// <summary>
-    /// Edits an existing device.
+    /// Adds new PC.
     /// </summary>
-    /// <param name="device">The updated device data</param>
+    /// <param name="pc">The pc to add</param>
     /// <returns>Success message</returns>
-    [HttpPut]
-    public IResult EditDevice([FromBody] Device device)
+    [HttpPost("pc")]
+    public IResult CreatePc([FromBody] PersonalComputer? pc)
     {
-        _deviceManager.EditDeviceData(device);
-        return Results.Ok($"Device with ID {device.Id} updated successfully");
+        _deviceManager.AddDevice(pc);
+        return Results.Created();
+    }
+    
+    /// <summary>
+    /// Adds new Smartwatch.
+    /// </summary>
+    /// <param name="sw">The smartwatch to add</param>
+    /// <returns>Success message</returns>
+    [HttpPost("smartwatch")]
+    public IResult CreateSmartwatch([FromBody] Smartwatch? sw)
+    {
+        _deviceManager.AddDevice(sw);
+        return Results.Created();
+    }
+    
+    /// <summary>
+    /// Adds new Embedded device.
+    /// </summary>
+    /// <param name="ed">The embedded device to add</param>
+    /// <returns>Success message</returns>
+    [HttpPost("embedded")]
+    public IResult CreateEmbedded([FromBody] Embedded? ed)
+    {
+        _deviceManager.AddDevice(ed);
+        return Results.Created();
+    }
+    
+    /// <summary>
+    /// Edits an existing pc.
+    /// </summary>
+    /// <param name="pc">The updated pc data</param>
+    /// <returns>Success message</returns>
+    [HttpPut("pc")]
+    public IResult EditPc([FromBody] PersonalComputer pc)
+    {
+        _deviceManager.EditDeviceData(pc);
+        return Results.Ok($"Device with ID {pc.Id} updated successfully");
+    }
+    
+    /// <summary>
+    /// Edits an existing smartwatch.
+    /// </summary>
+    /// <param name="sw">The updated smartwatch data</param>
+    /// <returns>Success message</returns>
+    [HttpPut("smartwatch")]
+    public IResult EditSmartwatch([FromBody] Smartwatch sw)
+    {
+        _deviceManager.EditDeviceData(sw);
+        return Results.Ok($"Device with ID {sw.Id} updated successfully");
+    }
+    
+    /// <summary>
+    /// Edits an existing embedded device.
+    /// </summary>
+    /// <param name="ed">The updated embedded device data</param>
+    /// <returns>Success message</returns>
+    [HttpPut("embedded")]
+    public IResult EditEmbedded([FromBody] Embedded ed)
+    {
+        _deviceManager.EditDeviceData(ed);
+        return Results.Ok($"Device with ID {ed.Id} updated successfully");
     }
 
     /// <summary>
