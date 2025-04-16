@@ -1,4 +1,4 @@
-using apbd_project;
+using Logic;
 
 namespace API.Controllers;
 
@@ -43,9 +43,10 @@ public class DeviceController : ControllerBase
         var device = _deviceManager.GetDeviceById(id);
         return Results.Ok(device);
     }
-
-    /// <summary>
-    /// Creates a new device.
+        // I am a creep, I am weirdo, what the hell am I doing here?
+        // I dont belong here...
+    //  <summary>
+    //Creates a new device.
     /// </summary>
     /// <param name="device">The device to create</param>
     /// <returns>Success message</returns>
