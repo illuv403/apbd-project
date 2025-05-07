@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/apbd-project.Entities",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/apbd-project.Logic", "src\apbd-project.Logic\apbd-project.Logic.csproj", "{A4286BC9-8474-4786-A2EF-913483B2D0C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apbd-project.Repositories", "apbd-project.Repositories\apbd-project.Repositories.csproj", "{63C8726A-8C52-4F9B-BB74-864CD58C6F03}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "src/apbd-project.Repositories", "src/apbd-project.Repositories\apbd-project.Repositories.csproj", "{63C8726A-8C52-4F9B-BB74-864CD58C6F03}"
 EndProject
 Global
 				GlobalSection(SolutionConfigurationPlatforms) = preSolution
