@@ -12,28 +12,9 @@ public class DeviceService : IDeviceService
         _repository = new DeviceRepository(connectionString);
     }
 
-    public IEnumerable<object> GetAllDevices()
-    {
-        return _repository.GetAllDevices();
-    }
-
-    public Device? GetDevice(string id)
-    {
-        return _repository.GetDeviceById(id);
-    }
-
-    public bool AddDevice(Device device)
-    {
-        return _repository.AddDevice(device);
-    }
-
-    public bool UpdateDevice(Device device)
-    {
-        return _repository.UpdateDevice(device);
-    }
-
-    public bool DeleteDevice(string id)
-    {
-        return _repository.DeleteDevice(id);
-    }
+    public IEnumerable<object> GetAllDevices() => _repository.GetAllDevices();
+    public Device? GetDevice(string Id) => _repository.GetDeviceById(Id);
+    public bool AddDevice(Device device) => _repository.AddDevice(device);
+    public bool UpdateDevice(Device device) => _repository.UpdateDevice(device);
+    public bool DeleteDevice(string Id) => _repository.DeleteDevice(Id);
 }
