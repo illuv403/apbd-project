@@ -11,6 +11,7 @@
       <ProjectReference Include="..\..\apbd-project.Repoitories\apbd-project.Repoitories.csproj" />
       <ProjectReference Include="..\..\apbd-project.Repositories\apbd-project.Repositories.csproj" />
       <ProjectReference Include="..\apbd-project.Entities\apbd-project.Entities.csproj" />
+      <ProjectReference Include="..\apbd-project.Repoitories\apbd-project.Repoitories.csproj" />
     </ItemGroup>
 
 </Project>
