@@ -68,7 +68,7 @@ public class DevicesController : ControllerBase
                         PropertyNameCaseInsensitive = true
                     };
 
-                    var deviceJson = json["device"]?.ToString();
+                    var deviceJson = json.ToJsonString();
                     if (string.IsNullOrEmpty(deviceJson))
                         return Results.BadRequest("Device data is missing.");
 
@@ -162,7 +162,7 @@ public class DevicesController : ControllerBase
         try
         {
             string? contentType = HttpContext.Request.ContentType?.ToLower();
-            Device device = null;
+            Device? device = null;
 
             switch (contentType)
             {
@@ -177,7 +177,7 @@ public class DevicesController : ControllerBase
                         PropertyNameCaseInsensitive = true
                     };
 
-                    var deviceJson = json["device"]?.ToString();
+                    var deviceJson = json.ToJsonString();
                     if (string.IsNullOrEmpty(deviceJson))
                         return Results.BadRequest("Device data is missing.");
 
@@ -247,7 +247,6 @@ public class DevicesController : ControllerBase
                     return Results.Conflict();
             }
             
-
             var success = _deviceService.UpdateDevice(device);
             if (!success)
                 return Results.NotFound();

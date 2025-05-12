@@ -13,7 +13,7 @@ public class DeviceService : IDeviceService
     }
 
     public IEnumerable<object> GetAllDevices() => _repository.GetAllDevices();
-    public Device? GetDevice(string Id) => _repository.GetDeviceById(Id);
+    public object? GetDevice(string Id) => _repository.GetDeviceById(Id);
     public bool AddDevice(Device device) => _repository.AddDevice(device);
     public bool UpdateDevice(Device device) => _repository.UpdateDevice(device);
     public bool DeleteDevice(string Id) => _repository.DeleteDevice(Id);

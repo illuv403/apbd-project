@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Entities.DTO_s;
 
 namespace Repository;
 
@@ -49,55 +50,64 @@ public class DeviceRepository : IDeviceRepository
         return devices;
     }
 
-    public Device? GetDeviceById(string Id)
+    public object? GetDeviceById(string id)
     {
-        Device? device = null;
+        object? device = null;
 
-        const string sql =
-            "SELECT d.Id, d.Name, d.IsEnabled, e.IpAddress, e.NetworkName, sw.BatteryLevel, pc.OperatingSystem " +
-            "FROM Device d " +
-            "LEFT JOIN Embedded e ON d.Id = e.DeviceId " +
-            "LEFT JOIN Smartwatch sw ON d.Id = sw.DeviceId " +
-            "LEFT JOIN PersonalComputer pc ON d.Id = pc.DeviceId " +
-            "WHERE d.Id = @Id";
+        const string sql = @"
+        SELECT d.Id, d.Name, d.IsEnabled, d.RV, 
+               e.IpAddress, e.NetworkName, 
+               sw.BatteryLevel, 
+               pc.OperatingSystem
+        FROM Device d
+        LEFT JOIN Embedded e ON d.Id = e.DeviceId
+        LEFT JOIN Smartwatch sw ON d.Id = sw.DeviceId
+        LEFT JOIN PersonalComputer pc ON d.Id = pc.DeviceId
+        WHERE d.Id = @Id";
 
-        using (SqlConnection connection = new SqlConnection(_connectionString))
+        using SqlConnection connection = new SqlConnection(_connectionString);
+        SqlCommand command = new SqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@Id", id);
+
+        connection.Open();
+        SqlDataReader reader = command.ExecuteReader();
+        try
         {
-            SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@Id", Id);
-
-            connection.Open();
-            SqlDataReader reader = command.ExecuteReader();
-            try
+            if (reader.Read())
             {
-                if (reader.Read())
+
+                if (id.StartsWith("SW-"))
                 {
-                    if (Id.StartsWith("SW-"))
-                    {
-                        device = new Smartwatch(reader.GetString(0),
-                            reader.GetString(1), reader.GetBoolean(2),
-                            reader.GetInt32(5));
-                    }
-                    else if (Id.StartsWith("E-"))
-                    {
-                        device = new Embedded(reader.GetString(0),
-                            reader.GetString(1), reader.GetBoolean(2),
-                            reader.GetString(4), reader.GetString(3));
-                    }
-                    else if (Id.StartsWith("P-"))
-                    {
-                        device = new PersonalComputer(reader.GetString(0),
-                            reader.GetString(1), reader.GetBoolean(2),
-                            reader.IsDBNull(6) ? null : reader.GetString(6));
-                    }
+                    device = new SmartwatchDTO(
+                        reader.GetString(0),
+                        reader.GetString(1), 
+                        reader.GetBoolean(2), 
+                        reader.IsDBNull(6) ? 0 : reader.GetInt32(6));
+                }
+                else if (id.StartsWith("E-"))
+                {
+                    device = new EmbeddedDTO(
+                        reader.GetString(0), 
+                        reader.GetString(1), 
+                        reader.GetBoolean(2), 
+                        reader.IsDBNull(4) ? "" : reader.GetString(4), 
+                        reader.IsDBNull(5) ? "" : reader.GetString(5));
+                }
+                else if (id.StartsWith("P-"))
+                {
+                    device = new PCDTO(
+                        reader.GetString(0), 
+                        reader.GetString(1), 
+                        reader.GetBoolean(2), 
+                        reader.IsDBNull(7) ? null : reader.GetString(7));
                 }
             }
-            finally
-            {
-                reader.Close();
-            }
         }
-
+        finally
+        {
+            reader.Close();
+        }
+        
         return device;
     }
 
@@ -112,46 +122,45 @@ public class DeviceRepository : IDeviceRepository
 
             try
             {
-                const string sp = "AddDevice";
-
-                SqlCommand command = new SqlCommand(sp, connection, transaction);
-                command.CommandType = CommandType.StoredProcedure;
-
-                command.Parameters.AddWithValue("@Id", device.Id);
-                command.Parameters.AddWithValue("@Name", device.Name);
-                command.Parameters.AddWithValue("@IsEnabled", device.IsEnabled);
-
-                countRowsAdded = command.ExecuteNonQuery();
+                SqlCommand command;
 
                 if (device is Smartwatch sw)
                 {
-                    const string smartwatchSql =
-                        "INSERT INTO Smartwatch (BatteryLevel, DeviceId) VALUES (@BatteryLevel, @DeviceId)";
-                    command = new SqlCommand(smartwatchSql, connection, transaction);
-                    command.Parameters.AddWithValue("@BatteryLevel", sw.BatteryLevel);
+                    command = new SqlCommand("AddSmartwatch", connection, transaction);
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("@DeviceId", sw.Id);
-                    command.ExecuteNonQuery();
+                    command.Parameters.AddWithValue("@Name", sw.Name);
+                    command.Parameters.AddWithValue("@IsEnabled", sw.IsEnabled);
+                    command.Parameters.AddWithValue("@BatteryPercentage", sw.BatteryLevel);
                 }
                 else if (device is PersonalComputer pc)
                 {
-                    const string pcSql =
-                        "INSERT INTO PersonalComputer (OperatingSystem, DeviceId) VALUES (@OperatingSystem, @DeviceId)";
-                    command = new SqlCommand(pcSql, connection, transaction);
-                    command.Parameters.AddWithValue("@OperatingSystem", (object?)pc.OperatingSystem ?? DBNull.Value);
+                    command = new SqlCommand("AddPersonalComputer", connection, transaction);
+                    command.CommandType = CommandType.StoredProcedure;
+
                     command.Parameters.AddWithValue("@DeviceId", pc.Id);
-                    command.ExecuteNonQuery();
+                    command.Parameters.AddWithValue("@Name", pc.Name);
+                    command.Parameters.AddWithValue("@IsEnabled", pc.IsEnabled);
+                    command.Parameters.AddWithValue("@OperatingSystem", (object?)pc.OperatingSystem ?? DBNull.Value);
                 }
                 else if (device is Embedded e)
                 {
-                    const string embeddedSql =
-                        "INSERT INTO Embedded (IpAddress, NetworkName, DeviceId) VALUES (@IpAddress, @NetworkName, @DeviceId)";
-                    command = new SqlCommand(embeddedSql, connection, transaction);
+                    command = new SqlCommand("AddEmbedded", connection, transaction);
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@DeviceId", e.Id);
+                    command.Parameters.AddWithValue("@Name", e.Name);
+                    command.Parameters.AddWithValue("@IsEnabled", e.IsEnabled);
                     command.Parameters.AddWithValue("@IpAddress", e.IpAddress);
                     command.Parameters.AddWithValue("@NetworkName", e.NetworkName);
-                    command.Parameters.AddWithValue("@DeviceId", e.Id);
-                    command.ExecuteNonQuery();
+                }
+                else
+                {
+                    return false;
                 }
 
+                countRowsAdded = command.ExecuteNonQuery();
                 transaction.Commit();
             }
             catch
@@ -163,6 +172,7 @@ public class DeviceRepository : IDeviceRepository
 
         return countRowsAdded != -1;
     }
+
 
     public bool UpdateDevice(Device device)
     {
@@ -178,14 +188,14 @@ public class DeviceRepository : IDeviceRepository
                 const string updateSql = @"
                 UPDATE Device 
                 SET Name = @Name, IsEnabled = @IsEnabled 
-                WHERE Id = @Id AND RowVersion = @RowVersion";
+                WHERE Id = @Id";
+
+                Console.WriteLine(device.Id);
 
                 SqlCommand command = new SqlCommand(updateSql, connection, transaction);
                 command.Parameters.AddWithValue("@Id", device.Id);
                 command.Parameters.AddWithValue("@Name", device.Name);
                 command.Parameters.AddWithValue("@IsEnabled", device.IsEnabled);
-                command.Parameters.Add("@RowVersion", SqlDbType.Timestamp).Value =
-                    device.RowVersion ?? throw new Exception("RowVersion missing");
 
                 affectedRows = command.ExecuteNonQuery();
                 if (affectedRows == 0)

@@ -26,15 +26,13 @@ public class Embedded : Device
                 throw new ArgumentException("Wrong IP address format.");  
             }
             _ipAddress = value;
-
-              
         }
     }
     
     /// <summary>
     /// Embedded device class constructor which sets network name and IP address
     /// </summary>
-    /// <param name="id">ID of embedded device in format of "E-"</param>
+    /// <param name="id">ID of embedded device in format of "E-[number]"</param>
     /// <param name="name">Just the name of the embedded device</param>
     /// <param name="isEnabled">Is embedded device on</param>
     /// <param name="ipAddress">Ip address of the ED</param>
@@ -42,15 +40,10 @@ public class Embedded : Device
     /// <exception cref="ArgumentException">Is being thrown if the id is not in the right format</exception>
     public Embedded(string id, string name, bool isEnabled, string ipAddress, string networkName) : base(id, name, isEnabled)
     {
-        if (CheckId(id))
-        {
-            throw new ArgumentException("Invalid ID value. Required format: E-1", id);
-        }
-
         IpAddress = ipAddress;
         NetworkName = networkName;
     }
-
+    
     /// <summary>
     /// Overrided TurnOn method with additional logic
     /// </summary>
@@ -59,6 +52,7 @@ public class Embedded : Device
         Connect();
         base.TurnOn();
     }
+    
     /// <summary>
     /// Overrided TurnOff method with additional logic
     /// </summary>
@@ -89,6 +83,4 @@ public class Embedded : Device
             throw new ConnectionException();
         }
     }
-    
-    private bool CheckId(string id) => id.Contains("E-");
 }
