@@ -10,7 +10,7 @@ public class Embedded : Device
     public string NetworkName { get; set; }
     private string _ipAddress;
     private bool _isConnected = false;
-
+    
     /// <summary>
     /// IpAddress property which checks for right IP pattern when setting new one 
     /// </summary>

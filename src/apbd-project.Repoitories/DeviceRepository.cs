@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Transactions;
 using Entities.DTO_s;
 
 namespace Repository;
@@ -75,30 +76,29 @@ public class DeviceRepository : IDeviceRepository
         {
             if (reader.Read())
             {
-
                 if (id.StartsWith("SW-"))
                 {
                     device = new SmartwatchDTO(
                         reader.GetString(0),
-                        reader.GetString(1), 
-                        reader.GetBoolean(2), 
+                        reader.GetString(1),
+                        reader.GetBoolean(2),
                         reader.IsDBNull(6) ? 0 : reader.GetInt32(6));
                 }
                 else if (id.StartsWith("E-"))
                 {
                     device = new EmbeddedDTO(
-                        reader.GetString(0), 
-                        reader.GetString(1), 
-                        reader.GetBoolean(2), 
-                        reader.IsDBNull(4) ? "" : reader.GetString(4), 
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetBoolean(2),
+                        reader.IsDBNull(4) ? "" : reader.GetString(4),
                         reader.IsDBNull(5) ? "" : reader.GetString(5));
                 }
                 else if (id.StartsWith("P-"))
                 {
                     device = new PCDTO(
-                        reader.GetString(0), 
-                        reader.GetString(1), 
-                        reader.GetBoolean(2), 
+                        reader.GetString(0),
+                        reader.GetString(1),
+                        reader.GetBoolean(2),
                         reader.IsDBNull(7) ? null : reader.GetString(7));
                 }
             }
@@ -107,7 +107,7 @@ public class DeviceRepository : IDeviceRepository
         {
             reader.Close();
         }
-        
+
         return device;
     }
 
@@ -173,44 +173,55 @@ public class DeviceRepository : IDeviceRepository
         return countRowsAdded != -1;
     }
 
-
     public bool UpdateDevice(Device device)
     {
         int affectedRows = -1;
 
         using (SqlConnection connection = new SqlConnection(_connectionString))
         {
-            connection.Open();
-            SqlTransaction transaction = connection.BeginTransaction();
+            SqlTransaction transaction = null;
 
             try
             {
-                const string updateSql = @"
-                UPDATE Device 
-                SET Name = @Name, IsEnabled = @IsEnabled 
-                WHERE Id = @Id";
+                connection.Open();
+                transaction = connection.BeginTransaction();
 
-                Console.WriteLine(device.Id);
+                string hex = device.RV.Substring(2).Trim();
+                byte[] rv = Convert.FromHexString(hex);
+
+                const string updateSql = @"
+                    UPDATE Device
+                    SET Name = @Name, IsEnabled = @IsEnabled
+                    WHERE Id = @Id AND RV = @RV";
 
                 SqlCommand command = new SqlCommand(updateSql, connection, transaction);
                 command.Parameters.AddWithValue("@Id", device.Id);
                 command.Parameters.AddWithValue("@Name", device.Name);
                 command.Parameters.AddWithValue("@IsEnabled", device.IsEnabled);
+                command.Parameters.AddWithValue("@RV", rv);
 
                 affectedRows = command.ExecuteNonQuery();
+
                 if (affectedRows == 0)
                 {
                     transaction.Rollback();
-                    return false;
+                    throw new Exception($"Device with Id {device.Id} was modified by another user.");
                 }
 
-                string deleteSql = device switch
+                string deleteSql;
+                if (device is Smartwatch)
                 {
-                    Smartwatch => "DELETE FROM Smartwatch WHERE DeviceId = @DeviceId",
-                    Embedded => "DELETE FROM Embedded WHERE DeviceId = @DeviceId",
-                    PersonalComputer => "DELETE FROM PersonalComputer WHERE DeviceId = @DeviceId",
-                    _ => throw new Exception("Unknown device type")
-                };
+                    deleteSql = "DELETE FROM Smartwatch WHERE DeviceId = @DeviceId";
+                }
+                else if (device is Embedded)
+                {
+                    deleteSql = "DELETE FROM Embedded WHERE DeviceId = @DeviceId";
+                }
+                else
+                {
+                    deleteSql = "DELETE FROM PersonalComputer WHERE DeviceId = @DeviceId";
+                }
+
 
                 command = new SqlCommand(deleteSql, connection, transaction);
                 command.Parameters.AddWithValue("@DeviceId", device.Id);
@@ -219,8 +230,8 @@ public class DeviceRepository : IDeviceRepository
                 if (device is Smartwatch sw)
                 {
                     command = new SqlCommand(
-                        "INSERT INTO Smartwatch (BatteryLevel, DeviceId) VALUES (@BatteryLevel, @DeviceId)", connection,
-                        transaction);
+                        "INSERT INTO Smartwatch (BatteryLevel, DeviceId) VALUES (@BatteryLevel, @DeviceId)",
+                        connection, transaction);
                     command.Parameters.AddWithValue("@BatteryLevel", sw.BatteryLevel);
                 }
                 else if (device is Embedded e)
@@ -244,14 +255,26 @@ public class DeviceRepository : IDeviceRepository
 
                 transaction.Commit();
             }
-            catch
+            catch (Exception ex)
             {
-                transaction.Rollback();
-                return false;
+                if (transaction != null)
+                {
+                    try
+                    {
+                        transaction.Rollback();
+                    }
+                    catch (Exception exc)
+                    {
+                        Console.WriteLine(exc.Message);
+                    }
+                }
+            
+                Console.WriteLine(ex.Message);
+                throw;
             }
         }
 
-        return affectedRows != -1;
+        return affectedRows > 0;
     }
 
     public bool DeleteDevice(string Id)

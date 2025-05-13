@@ -211,18 +211,21 @@ public class DevicesController : ControllerBase
                         .ToDictionary(parts => parts[0].Trim(), parts => parts[1].Trim());
 
                     var id = dict["Id"];
-
                     var name = dict["Name"];
                     var isEnabled = bool.Parse(dict["IsEnabled"]);
-
+                    string? rv = dict["RV"];
+                    
                     if (id.StartsWith("E-"))
                     {
                         device = new Embedded(
-                            id,
-                            name,
-                            isEnabled,
-                            dict.GetValueOrDefault("IpAddress"),
-                            dict.GetValueOrDefault("NetworkName"));
+                                id,
+                                name,
+                                isEnabled,
+                                dict.GetValueOrDefault("IpAddress"),
+                                dict.GetValueOrDefault("NetworkName"))
+                        {
+                            RV = rv
+                        };
                     }
                     else if (id.StartsWith("SW-"))
                     {
@@ -230,7 +233,10 @@ public class DevicesController : ControllerBase
                             id,
                             name,
                             isEnabled,
-                            int.Parse(dict["BatteryLevel"]));
+                            int.Parse(dict["BatteryLevel"]))
+                        {
+                            RV = rv
+                        };
                     }
                     else if (id.StartsWith("P-"))
                     {
@@ -238,7 +244,10 @@ public class DevicesController : ControllerBase
                             id,
                             name,
                             isEnabled,
-                            dict.GetValueOrDefault("OperatingSystem"));
+                            dict.GetValueOrDefault("OperatingSystem"))
+                        {
+                            RV = rv
+                        };
                     }
 
                     break;
@@ -246,7 +255,7 @@ public class DevicesController : ControllerBase
                 default:
                     return Results.Conflict();
             }
-            
+
             var success = _deviceService.UpdateDevice(device);
             if (!success)
                 return Results.NotFound();

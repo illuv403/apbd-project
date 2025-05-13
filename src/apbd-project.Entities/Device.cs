@@ -8,7 +8,8 @@ public abstract class Device
     public string Id { get; set; }
     public string Name { get; set; }
     public bool IsEnabled { get; set; }
-
+    public string? RV { get; set; }
+    
     /// <summary>
     /// Device class constructor
     /// </summary>
