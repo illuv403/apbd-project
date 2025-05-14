@@ -213,19 +213,15 @@ public class DevicesController : ControllerBase
                     var id = dict["Id"];
                     var name = dict["Name"];
                     var isEnabled = bool.Parse(dict["IsEnabled"]);
-                    string? rv = dict["RV"];
                     
                     if (id.StartsWith("E-"))
                     {
                         device = new Embedded(
-                                id,
-                                name,
-                                isEnabled,
-                                dict.GetValueOrDefault("IpAddress"),
-                                dict.GetValueOrDefault("NetworkName"))
-                        {
-                            RV = rv
-                        };
+                            id,
+                            name,
+                            isEnabled,
+                            dict.GetValueOrDefault("IpAddress"),
+                            dict.GetValueOrDefault("NetworkName"));
                     }
                     else if (id.StartsWith("SW-"))
                     {
@@ -233,10 +229,7 @@ public class DevicesController : ControllerBase
                             id,
                             name,
                             isEnabled,
-                            int.Parse(dict["BatteryLevel"]))
-                        {
-                            RV = rv
-                        };
+                            int.Parse(dict["BatteryLevel"]));
                     }
                     else if (id.StartsWith("P-"))
                     {
@@ -244,10 +237,7 @@ public class DevicesController : ControllerBase
                             id,
                             name,
                             isEnabled,
-                            dict.GetValueOrDefault("OperatingSystem"))
-                        {
-                            RV = rv
-                        };
+                            dict.GetValueOrDefault("OperatingSystem"));
                     }
 
                     break;

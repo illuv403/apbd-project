@@ -186,7 +186,7 @@ public class DeviceRepository : IDeviceRepository
                 connection.Open();
                 transaction = connection.BeginTransaction();
 
-                string hex = device.RV.Substring(2).Trim();
+                string? hex = GetDeviceRowVersion(device.Id);
                 byte[] rv = Convert.FromHexString(hex);
 
                 const string updateSql = @"
@@ -279,25 +279,46 @@ public class DeviceRepository : IDeviceRepository
 
     public bool DeleteDevice(string Id)
     {
-        using SqlConnection connection = new SqlConnection(_connectionString);
-        connection.Open();
-
-        SqlTransaction transaction = connection.BeginTransaction();
-
-        try
+        using (SqlConnection connection = new SqlConnection(_connectionString))
         {
-            SqlCommand command = new SqlCommand("DELETE FROM Device WHERE Id = @Id", connection, transaction);
-            command.Parameters.AddWithValue("@Id", Id);
+            connection.Open();
 
-            int rows = command.ExecuteNonQuery();
-            transaction.Commit();
+            SqlTransaction transaction = connection.BeginTransaction();
 
-            return rows > 0;
+            try
+            {
+                SqlCommand command = new SqlCommand("DELETE FROM Device WHERE Id = @Id", connection, transaction);
+                command.Parameters.AddWithValue("@Id", Id);
+
+                int rows = command.ExecuteNonQuery();
+                transaction.Commit();
+
+                return rows > 0;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
         }
-        catch
+    }
+
+    public string? GetDeviceRowVersion(string id)
+    {
+        const string sql = "SELECT RV FROM Device WHERE Id = @Id";
+
+        using (SqlConnection connection = new SqlConnection(_connectionString))
         {
-            transaction.Rollback();
-            return false;
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@Id", id);
+            connection.Open();
+            var res = command.ExecuteScalar();
+            if (res != null && res is byte[] rv)
+            {
+                return BitConverter.ToString(rv).Replace("-", string.Empty);
+            }
         }
+        
+        return null;
     }
 }
